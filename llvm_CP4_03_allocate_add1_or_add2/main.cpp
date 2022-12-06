@@ -51,26 +51,24 @@ int main(int argc, char ** argv){
     auto *entry = createBlock(func, "entry");
     auto *then_block = createBlock(func, "then_bb");
     auto *else_block = createBlock(func, "else_bb");
-    auto *merge_block = createBlock(func, "merge_bb");
-    // if
+
 
     builder.SetInsertPoint(entry);
+    auto *retAlloca = builder.CreateAlloca(builder.getInt32Ty(), nullptr, "ret");
+    builder.CreateStore(getArg(func,0), retAlloca);
     auto *cmp = builder.CreateICmpSLT(getArg(func,0), builder.getInt32(1), "cmp_tmp");
     builder.CreateCondBr(cmp, then_block, else_block);
 
     builder.SetInsertPoint(then_block);
     auto *add1 = builder.CreateAdd(getArg(func,0), builder.getInt32(1), "add1_tmp");
-    builder.CreateBr(merge_block);
+    builder.CreateStore(add1, retAlloca);
+    builder.CreateRet(builder.CreateLoad(builder.getInt32Ty(),retAlloca, "ret"));
+
 
     builder.SetInsertPoint(else_block);
     auto *add2 = builder.CreateAdd(getArg(func,0), builder.getInt32(2), "add2_tmp");
-    builder.CreateBr(merge_block);
-
-    builder.SetInsertPoint(merge_block);
-    auto *ret = builder.CreatePHI(builder.getInt32Ty(), 2, "ret");
-    ret->addIncoming(add1, then_block);
-    ret->addIncoming(add2, else_block);
-    builder.CreateRet(ret);
+    builder.CreateStore(add2, retAlloca);
+    builder.CreateRet(builder.CreateLoad(builder.getInt32Ty(),retAlloca, "ret"));
 
     mod->dump();
 
@@ -86,6 +84,7 @@ int main(int argc, char ** argv){
     auto fooFunc= (int (*)(int))addSymbol.getAddress();
     llvm::outs() << "foo(-1)= " << fooFunc(-1) << "\n";
     llvm::outs() << "foo(1)= " << fooFunc(1) << "\n";
+
 
     return 0;
 }
