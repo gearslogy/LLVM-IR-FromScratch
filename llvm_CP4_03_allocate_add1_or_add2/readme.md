@@ -1,3 +1,15 @@
+
+```c
+int foo(int a){
+    int ret = 0;
+    if(a <0)
+        ret = a+1;
+    else
+        ret = a+2;
+    return ret;
+}
+```
+
 ```llvm
 ; ModuleID = 'my compiler'
 source_filename = "my compiler"
