@@ -32,3 +32,17 @@ after_loop:                                       ; preds = %loop_body
   ret i32 %final_load_ret
 }
 ```
+result: foo(1,10)= 11, it should be: foo(1,10)=10
+
+error on loop, we need change IR from:
+```llvm
+%end_cmp = icmp ult i32 %i, %end_condition
+```
+to:
+```llvm
+%end_cmp = icmp ult i32 %next_val, %end_condition
+```
+so the c code:
+```c
+auto *end_cmp = builder.CreateICmpULT(next_val, getArg(func, 1), "end_cmp");    // i < end_condition
+```

@@ -75,7 +75,7 @@ int main(int argc, char **argv) {
     auto *next_val = builder.CreateAdd(i_phi, builder.getInt32(1), "next_val" );
     i_phi->addIncoming(next_val, loop_body_block);
 
-    auto *end_cmp = builder.CreateICmpULT(i_phi, getArg(func, 1), "end_cmp");    // i < end_condition
+    auto *end_cmp = builder.CreateICmpULT(next_val, getArg(func, 1), "end_cmp");    // i < end_condition
     // end_cmp is already of type i1, so we don't need the following code:
     //auto *loop_condition = builder.CreateICmpNE(end_cmp, builder.getInt32(0), "loop_condition");
     //end_cmp->getType()->dump();
