@@ -1,3 +1,13 @@
+```C
+int foo(int a, int end_condition){
+    int ret = a;
+    for(int i=1; i< end_condition; i++){
+        ret += 1;
+    }
+    return ret;
+}
+```
+
 ```llvm
 ; ModuleID = 'test foo module'
 source_filename = "test foo module"
